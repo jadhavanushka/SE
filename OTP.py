@@ -1,51 +1,60 @@
 import random
-import smtplib
 import Sender_data
+import smtplib
+
 
 def generateOTP(size):
-    digits = "0123456789"
     OTP = ""
     for i in range(size):
-        OTP += digits[random.randint(0,9)]
+        OTP += str(random.randint(0, 9))
     return OTP
 
-def verifyOTP(otp):
-    otp_1 = input("Enter your OTP >> ")
+
+def verifyOTP(otp, otp_1):
     if otp_1 == otp:
-        print("Verified!")
+        return True
     else:
-        print("Incorrect OTP!")
+        return False
 
-sender_email=Sender_data.email
-sender_password=Sender_data.password
-
-def sendOTP():
+def sendOTP(Sender_data, receiver_email, OTP):
     # Connect to server
-    s = smtplib.SMTP('smtp.gmail.com', 587)
-    s.starttls()
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+
+    #Get sender's details
+    sender_email=Sender_data.email
+    sender_password=Sender_data.password
+
 
     # Login to gmail account of sender
-    s.login(sender_email, sender_password)   
+    server.login(sender_email, sender_password)
 
-    # Generate OPT
-    size=int(input("Enter length of OTP: "))
-    OTP=generateOTP(size)
-
-    #Generate message to be sent
+    # Generate message to be sent
     msg = str(OTP)+" is your OTP"
 
     # Send email
-    receiver_email = input("Enter your email: ")
-    s.sendmail(sender_email, receiver_email, msg)
-    print("OTP sent!")  
+    server.sendmail(Sender_data.email, receiver_email, msg)
 
     # Disconnect server
-    s.quit()
-    return OTP
+    server.quit()
 
 
-# Send OTP
-OTP=sendOTP()
+if __name__ == '__main__':
+    # Get receiver's email
+    receiver_email = 'anushkajadhav@dbatu.ac.in'  # input("Enter your email: ")
 
-# Verify OTP
-verifyOTP(OTP)
+    # Generate OPT
+    size = int(input("Enter length of OTP: "))
+    OTP = generateOTP(size)
+
+    # Send OTP
+    sendOTP(Sender_data, receiver_email, OTP)
+    print("OTP sent!")
+
+    # Verify OTP
+    otp_1 = input("Enter your OTP >> ")
+
+    if verifyOTP(OTP, otp_1):
+        print("Verified!")
+    else:
+        print("Incorrect OTP!")
