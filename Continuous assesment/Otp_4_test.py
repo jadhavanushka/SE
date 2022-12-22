@@ -1,5 +1,6 @@
-import Otp_3 as OTP
-import Sender_data
+# Test cases for OTP assignment
+
+from Otp_3 import otp_sender
 import unittest
 
 
@@ -9,23 +10,24 @@ class TestingOTPSender(unittest.TestCase):
             raise AssertionError(
                 'Length of OTP should be in between %r and %r' % (low, hi))
 
-
     def test_generateOTP(self):
-        size = 5
+        OTP = otp_sender()
+        OTP.size = 5
 
-        otp = OTP.generateOTP(size)
+        self.assertBetween(OTP.size, 4, 8)
 
-        self.assertEqual(len(otp), size, 'OTP length does not match')
-        self.assertBetween(len(otp), 4, 8)
-
+        OTP.generateOTP()
+        self.assertEqual(len(OTP.Otp), OTP.size, 'OTP length does not match')
 
     def test_verifyOTP(self):
-        otp = OTP.generateOTP(4)
+        OTP = otp_sender()
+        OTP.size = 5
 
-        self.assertTrue(OTP.verifyOTP(otp, otp), "OTP does not match")
-        self.assertFalse(OTP.verifyOTP(otp, 'abcd'),
+        OTP.generateOTP()
+
+        self.assertTrue(OTP.verifyOTP(OTP.Otp), "OTP does not match")
+        self.assertFalse(OTP.verifyOTP('abcd'),
                          "OTP should not have matched")
-
 
     def test_validateEmail(self):
         receiver_email = 'username@domain.in'
@@ -33,24 +35,26 @@ class TestingOTPSender(unittest.TestCase):
         self.assertIn('@', receiver_email, "Email is not valid")
         self.assertIn('.in', receiver_email, "Email is not valid")
 
-
     def test_validateEmail2(self):
         receiver_email = 'username@domain.com'
 
         self.assertIn('@', receiver_email, "Email is not valid")
         self.assertIn('.com', receiver_email, "Email is not valid")
 
-
     def test_sendOTP(self):
-        otp = OTP.generateOTP(5)
-        receiver_email = 'anushkajadhav@dbatu.ac.in'
+        OTP = otp_sender()
 
-        self.assertBetween(len(otp), 4, 8)
-        
-        self.assertIn('@', receiver_email, "Email is not valid")
-        self.assertIn('.in', receiver_email, "Email is not valid")
+        OTP.size = 5
+        self.assertBetween(OTP.size, 4, 8)
 
-        OTP.sendOTP(Sender_data, receiver_email, otp)
+        OTP.generateOTP()
+        self.assertIsNotNone(OTP.Otp, "OTP is null")
+
+        OTP.receiver_email = 'anushkajadhav@dbatu.ac.in'
+        self.assertIn('@', OTP.receiver_email, "Email is not valid")
+        self.assertIn('.in', OTP.receiver_email, "Email is not valid")
+
+        OTP.sendOTP()
 
 
 if __name__ == '__main__':
